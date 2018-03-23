@@ -19,12 +19,6 @@ const deployedContract = VotingContract.new (['Rama', 'Nick', 'Jose'],
 
 const contractInstance = VotingContract.at('0xc9857285db924e026acb4afb0ab6dc4bf20841d7');
 
-/*
-contractInstance.Vote(0, { from: web3.eth.accounts[4] });
-contractInstance.Vote(0, { from: web3.eth.accounts[5] });
-contractInstance.Vote(0, { from: web3.eth.accounts[6] });
-*/
-
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
