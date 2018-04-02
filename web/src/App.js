@@ -6,11 +6,19 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
-      text: "my Contract!",
-      voteResult: ""
+      text: "...",
+      voteResult: "",
+      popup: "none",
+      passphrase: "",
+      number: -1
     };
 
+    this.handlePassphraseChange = this.handlePassphraseChange.bind(this);
+
     this.getMessage();
+  }
+  handlePassphraseChange(event){
+    this.setState({ passphrase: event.target.value });
   }
   async getMessage(){
     try{
@@ -25,16 +33,31 @@ class App extends Component {
 
   }
   async vote(number){
-    this.setState({ voteResult: "Voting..." });
+    this.setState({ popup: "block" });
 
-    let resp = await fetch('http://localhost:3001/' + number);
-    if (resp.ok) {
-      let json = await resp.json();
-      this.setState({ voteResult: json.msg });
+    this.setState({number: number});
+
+    this.setState({ voteResult: "Waiting for a passphrase..." });
+
+    /*
+    let resp = await this.sendPassword();
+    this.setState({ popup: "none" });
+    
+    if (this.state.unlocked){
+      let resp = await fetch('http://localhost:3001/' + number);
+      if (resp.ok) {
+        let json = await resp.json();
+        this.setState({ voteResult: json.msg });
+      }
+      else {
+        this.setState({ voteResult: "There was a voting error, try again" });
+      }
     }
     else {
-      this.setState({ voteResult: "There was a voting error, try again" });
+      this.setState({ voteResult: "Given passphrase was invalid, try again" });
     }
+    */
+    //this.setState({popup: "none"});
   }
   async showCounting(number){
     let resp = await fetch('http://localhost:3001/count' + number);
@@ -44,6 +67,35 @@ class App extends Component {
     }
     else {
       this.setState({ voteResult: "There was an error showing the results, try again" });
+    }
+  }
+  async sendPassword(){
+    let resp = await fetch("http://localhost:3001/unlock", {
+      method: "POST",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pass: this.state.passphrase
+      })
+    })
+
+    this.setState({ popup: "none" });
+    this.refs.passphraseInput.value = "";
+    
+    if (resp.ok) {
+      resp = await fetch('http://localhost:3001/' + this.state.number);
+      if (resp.ok) {
+        let json = await resp.json();
+        this.setState({ voteResult: json.msg });
+      }
+      else {
+        this.setState({ voteResult: "There was a voting error, try again" });
+      }
+    }
+    else {
+      this.setState({ voteResult: "Given passphrase was invalid, try again" });
     }
   }
   render() {
@@ -73,6 +125,11 @@ class App extends Component {
           </ul>
         </div>
         <p className="Vote-results">{this.state.voteResult}</p>
+        <div className="popup" style={{ display: this.state.popup }}>
+          <div>Enter passphrase to unlock your account:</div>
+          <input name="passphrase" type="password" ref="passphraseInput" onChange={this.handlePassphraseChange} /><br/><br/>
+          <button className="Show-button" onClick={() => { this.sendPassword() }}>Done</button>
+        </div>
       </div>
     );
   }

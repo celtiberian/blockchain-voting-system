@@ -74,6 +74,21 @@ ul{
     opacity: 0.8;
 }
 
+.popup {
+    padding: 40px;
+    padding-top: 10px;
+    border: 2px solid #490477;
+    background-color: #8059f4;
+    color: #fff;
+    margin-left: 15px;
+    border-radius: 10px;
+    width:160px;
+    height:80px;
+    position:absolute;
+    top:40%;
+    left: 8%;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
